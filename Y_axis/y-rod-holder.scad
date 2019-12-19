@@ -5,8 +5,25 @@
 // http://www.reprap.org/wiki/Prusa_Mendel
 // http://prusamendel.org
 
-//CUBE printer modification by Radek Vana
+//CUBE printer - mk3 modification by Radek Vana
 
+
+/*****************************************************************************/
+//includes
+include <../_includes/dimensions_mk3.scad>;
+include <../_includes/dimensions_cube.scad>;
+/*****************************************************************************/
+//variables
+dep_mk3 = 10;//originallen on mk3 printer
+wid = 26;
+dep = (CUBE_ROD_Y_LEN - MK3_ROD_Y_LEN)/2 - dep_mk3;
+hei = 12;
+
+rod_z_pos = 10.5;
+
+
+/*****************************************************************************/
+//modules
 module ziptie_round_edge()
 {
     difference()
@@ -28,7 +45,7 @@ module part()
         {
             // body block
             difference() {
-                translate([-13,-3,0]) cube([26,10,12]);
+                translate([-13,-3,0]) cube([wid,dep,hei]);
                 
                 // upper corners
                 translate([4,-3.5,20]) rotate([0,60,0]) cube([20,30,20]);
@@ -40,11 +57,11 @@ module part()
         }
 
         // y-axis cut
-        translate([0,11,10.5]) rotate([90,0,0]) cylinder( h=14, r=4, $fn=50 );
-       translate([0,8,10.5]) rotate([90,0,0]) cylinder( h=2, r1=4.5, r2=4, $fn=50 );
-        translate([0,-2,10.5]) rotate([90,0,0]) cylinder( h=2, r1=4, r2=4.5, $fn=50 );
-        translate([-7,-4,14.5]) rotate([0,45,0]) cube([10,20,10]);
-        translate([0,8,10.5]) rotate([90,0,0]) cylinder( h=1.4, r1=5, r2=4, $fn=50 );
+        translate([0,11,rod_z_pos]) rotate([90,0,0]) cylinder( h=14, r=4, $fn=50 );
+        translate([0,8,rod_z_pos]) rotate([90,0,0]) cylinder( h=2, r1=4.5, r2=4, $fn=50 );
+        translate([0,-2,rod_z_pos]) rotate([90,0,0]) cylinder( h=2, r1=4, r2=4.5, $fn=50 );
+        translate([0,8,rod_z_pos]) rotate([90,0,0]) cylinder( h=1.4, r1=5, r2=4, $fn=50 );
+        translate([-7,-4,rod_z_pos+4]) rotate([0,45,0]) cube([10,20,10]);//edge
 
         
         // ziptie
@@ -57,7 +74,8 @@ module part()
     }
 }
 
-
+/*****************************************************************************/
+//part
 rotate([90,0,0])part();
 
 
