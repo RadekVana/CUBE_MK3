@@ -12,12 +12,13 @@
 //includes
 include <../_includes/dimensions_mk3.scad>;
 include <../_includes/dimensions_cube.scad>;
+include <../_includes/mounting.scad>;
 include <../_includes/MCAD-master/boxes.scad>;
 /*****************************************************************************/
 //variables
 dep_mk3 = 10;//originallen on mk3 printer
 wid = 26;
-dep = (CUBE_ROD_Y_LEN - MK3_ROD_Y_LEN)/2 - dep_mk3;//was 10
+dep = (CUBE_ROD_Y_LEN - MK3_ROD_Y_LEN)/2 - dep_mk3;//was 10, lucky me size is 20 just like profile
 hei = 11.5;//was 12
 
 rod_z_pos = 10;//was 10.5
@@ -98,11 +99,14 @@ module part()
             _part();
             _mount();
         }
+
+        translate([+16,dep/2,mount_hei-0.2])profile_screw_hole_long(hei-mount_hei);
+        translate([-16,dep/2,mount_hei-0.2])profile_screw_hole_long(hei-mount_hei);
     }
 }
 
 /*****************************************************************************/
 //part
-part();
+rotate([90,0,0])part();
 
 
