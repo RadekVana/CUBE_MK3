@@ -1,0 +1,2 @@
+MK3_ROD_DIA   = 8;
+MK3_ROD_Y_LEN = 330;
