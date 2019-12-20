@@ -18,7 +18,8 @@ include <../_includes/MCAD-master/boxes.scad>;
 //variables
 dep_mk3 = 10;//originallen on mk3 printer
 wid = 26;
-dep = (CUBE_ROD_Y_LEN - MK3_ROD_Y_LEN)/2 - dep_mk3;//was 10, lucky me size is 20 just like profile
+dep = PROFILE_SZ;
+dep2 = (CUBE_ROD_Y_LEN - MK3_ROD_Y_LEN)/2 + 2*dep_mk3;
 hei = 11.5;//was 12
 
 rod_z_pos = 10;//was 10.5
@@ -33,6 +34,8 @@ mount_hei = 5;
 
 edge_r = 1;
 
+ziptie_width = 3.2;
+ziptie_pos = 1.25;
 $fn=50;
 /*****************************************************************************/
 //modules
@@ -40,15 +43,24 @@ module ziptie_round_edge()
 {
     difference()
     {
-        translate([0,0,0])      rotate([90,0,0]) cylinder( h=3.2, r=4 );  
+        translate([0,0,0])      rotate([90,0,0]) cylinder( h=ziptie_width, r=4 );  
         translate([0,1,0])      rotate([90,0,0]) cylinder( h=5, r=2 );  
         translate([-10,-4,0])   cube([20,5,5]);
         translate([-20,-4,-13]) cube([20,5,20]);
     }
 }
 
+module zip_hole(ypos)
+{
+        // ziptie
+        translate([+7.8, ypos+ziptie_width, 9])          ziptie_round_edge();
+        translate([-7.8, ypos,     9]) rotate([0,0,180]) ziptie_round_edge();
+        translate([-8.1, ypos,     5])                   cube([16.2,ziptie_width,2]);
+        translate([+0.8, ypos,    25]) rotate([0,60,0])  cube([20,ziptie_width,2]);
+        translate([-1.8, ypos,    27]) rotate([0,120,0]) cube([20,ziptie_width,2]);
+}
 
-module _part()    
+module _part(dep)    
 {
 
     difference()
@@ -75,17 +87,10 @@ module _part()
         translate([-7, -0.5,  rod_z_pos+4]) rotate([  0,45,0]) cube([rod_d+2, dep+1, rod_d+2]);//edge
 
         
-        // ziptie
-        translate([+7.8, dep - 1.25 ,9])                    ziptie_round_edge();
-        translate([-7.8, dep - 4.45, 9])  rotate([0,0,180]) ziptie_round_edge();
-        translate([-8.1, dep - 4.45, 5])                    cube([16.2,3.2,2]);
-        translate([+0.8, dep - 4.45, 25]) rotate([0,60,0])  cube([20,3.2,2]);
-        translate([-1.8, dep - 4.45, 27]) rotate([0,120,0]) cube([20,3.2,2]);
-
     }
 }
 
-module _mount()
+module _mount(dep)
 {
     translate([0,dep/2,mount_hei/2]) roundedBox([mount_wid,dep,mount_hei], edge_r);//cube([mount_wid,dep,5]);
 }
@@ -96,17 +101,39 @@ module part()
     {
         union()
         {
-            _part();
-            _mount();
+            _part(dep);
+            _mount(dep);
         }
 
         translate([+16,dep/2,mount_hei-0.2])profile_screw_hole_long(hei-mount_hei);
         translate([-16,dep/2,mount_hei-0.2])profile_screw_hole_long(hei-mount_hei);
+        zip_hole(dep - ziptie_width - ziptie_pos);
+        zip_hole(ziptie_pos);
     }
 }
 
-/*****************************************************************************/
-//part
-rotate([90,0,0])part();
 
+module part2() 
+{
+    difference()
+    {
+        union()
+        {
+            _part(dep2);
+            _mount(dep);
+        }
+
+        translate([+16,dep/2,mount_hei-0.2])profile_screw_hole_long(hei-mount_hei);
+        translate([-16,dep/2,mount_hei-0.2])profile_screw_hole_long(hei-mount_hei);
+        zip_hole(dep - ziptie_width - ziptie_pos);
+        zip_hole(ziptie_pos);
+        zip_hole(dep2 - ziptie_width - ziptie_pos);
+    }
+}
+/*****************************************************************************/
+//parts
+//part();
+//Prusa slicer has some isues if it is not rotated, so I rotate it here, than rotate it back in slicer
+//rotate([90,0,0])part2();
+rotate([90,0,0])part();
 
