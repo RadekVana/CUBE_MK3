@@ -14,7 +14,7 @@
 include <../_includes/MCAD-master/boxes.scad>;
 /*****************************************************************************/
 //variables
-bot = [18,48,8];
+bot = [18,48,6];
 top = [18,15,27];
 belt_hole_w = 6;
 belt_hole_h = 2.2;
@@ -36,8 +36,12 @@ module part()
         // base block
         union()
         {
+            intersection()
+            {
             translate([0,0,bot[2]/2]) cube(bot,true);
-            translate([0,0,top[2]/2]) cube(top,true);
+             rotate([0,90,0])roundedBox([bot[2]*2,bot[1],bot[0]], 5,true);
+            }
+            translate([0,0,top[2]/2]) rotate([0,90,0])roundedBox([top[2],top[1],top[0]], 5,true);
         }
     }
 }
@@ -86,7 +90,7 @@ module y_belt_holder()
     {
         part();
         translate([0,0,19])belt_hole();
-        translate([0,0,9.1])mirror([0,1,0])belt_hole();
+        translate([0,0,7.1])mirror([0,1,0])belt_hole();
         mount_screw(19.25);
         mount_screw(-19.25);
     }
@@ -94,5 +98,6 @@ module y_belt_holder()
 
 }
 
-
+/*****************************************************************************/
+//parts
  y_belt_holder();   
