@@ -16,7 +16,7 @@ include <../_includes/MCAD-master/boxes.scad>;
 //variables
 bot = [18,48,6];
 top = [18,15,27];
-belt_hole_w = 6;
+belt_hole_w = 6.6;
 belt_hole_h = 2.2;
 belt_screw_head_d = 5.2;
 belt_nut_d = 5.5;
@@ -51,13 +51,13 @@ module mount_screw(pos)
 {
         hull()
         {
-            translate([0, pos+0.25, -0.1]) cylinder( h=30, d = mount_screw_body_d);
-            translate([0, pos-0.25, -0.1]) cylinder( h=30, d = mount_screw_body_d);
+            translate([0, pos+0.5, -0.1]) cylinder( h=30, d = mount_screw_body_d);
+            translate([0, pos-0.5, -0.1]) cylinder( h=30, d = mount_screw_body_d);
         }
         hull()
         {
-            translate([0, pos+0.25, 3.5]) cylinder( h=7, d = mount_screw_head_d);
-            translate([0, pos-0.25, 3.5]) cylinder( h=7, d = mount_screw_head_d);
+            translate([0, pos+0.5, 3.5]) cylinder( h=7, d = mount_screw_head_d);
+            translate([0, pos-0.5, 3.5]) cylinder( h=7, d = mount_screw_head_d);
         }
 }
 
@@ -91,8 +91,8 @@ module y_belt_holder()
         part();
         translate([0,0,19])belt_hole();
         translate([0,0,7.1])mirror([0,1,0])belt_hole();
-        mount_screw(19.25);
-        mount_screw(-19.25);
+        mount_screw(19.5);
+        mount_screw(-19.5);
     }
     
 
