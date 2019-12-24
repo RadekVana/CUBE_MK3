@@ -13,7 +13,7 @@ include <../_includes/MCAD-master/boxes.scad>;
 include <../_includes/mounting.scad>;
 /*****************************************************************************/
 //variables
-top_screw_to_top_of_profile = 10;
+top_screw_to_top_of_profile = 7;
 
 top_motor_screw_y_pos = 5.5;
 bot_motor_screw_y_pos = 36.5;
@@ -148,7 +148,3 @@ module part()
 //parts 
 
 part();
-
-
-//import("y-motor-holder.stl");   
-    
