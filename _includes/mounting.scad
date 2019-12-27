@@ -1,6 +1,7 @@
+include <dimensions_cube.scad>;
+
 /*****************************************************************************/
 //variables
-PROFILE_SZ = 20;
 PROFILE_SCREW_HEAD_D = 12;
 PROFILE_SCREW_D = 5;
 PROFILE_SCREW_LEN_SHORT = 8;
