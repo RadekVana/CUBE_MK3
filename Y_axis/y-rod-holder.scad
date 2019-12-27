@@ -19,7 +19,7 @@ include <../_includes/MCAD-master/boxes.scad>;
 dep_mk3 = 10;//originallen on mk3 printer
 wid = 26;
 dep = PROFILE_SZ;
-dep2 = (CUBE_ROD_Y_LEN - MK3_ROD_Y_LEN)/2 + 2*dep_mk3;
+dep2 = (ROD_Y_LEN - MK3_ROD_Y_LEN)/2 + 2*dep_mk3;
 hei = 11.5;//was 12
 
 rod_z_pos = 10;//was 10.5
