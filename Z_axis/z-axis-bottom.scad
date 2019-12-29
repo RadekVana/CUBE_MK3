@@ -5,155 +5,108 @@
 // http://www.reprap.org/wiki/Prusa_Mendel
 // http://prusamendel.org
 
+//CUBE printer - mk3 Z motor holder by Radek Vana
+
+/*****************************************************************************/
+//includes
+include <../_includes/MCAD-master/boxes.scad>;
+include <../_includes/mounting.scad>;
+/*****************************************************************************/
+//variables
+motor_sz = FRONT_PROFILE_LEN - MK3_Z_TRAPESOID_DIST;
+echo(str("motor_sz = ", motor_sz));
+assert(motor_sz > 42.5, "motor cannot fit");
+
+wall_sz    = 7;
+side_wall  = 10;
+edge       = 1.5;
+top_plate  = [motor_sz + 2* side_wall, motor_sz + 2 * PROFILE_SZ,wall_sz];
+side_plate = [side_wall, motor_sz, wall_sz+PROFILE_SZ];
+trapesoid_rod_dist = -17;
+
+motor_scr_dist = 31;
+motor_scr_half_dist = motor_scr_dist/2;
+
+
+body_r = 1.65;
+head_r = 3.2; 
+
+
+$fn = $preview ? 32 : 64;
+
+/*****************************************************************************/
+//modules
 module z_bottom_base()
 {
-     translate([0,-1.5,0]) cube([7.5,49,16+20]); // plate touching the base
-     translate([0,-5,0]) cube([30,3.7,22]); // plate touching the base
-     translate([0,42,0]) cube([30,5.5,22]); // plate touching the base
-     translate([0,-5,0]) cube([50,52.5,7]); // plate touching the base
+    translate([0,0,top_plate[2]/2])roundedBox(top_plate, edge, true);
+
+    translate([+(top_plate[0]-side_plate[0])/2,0,side_plate[2]/2])roundedBox(side_plate, edge);
+    translate([-(top_plate[0]-side_plate[0])/2,0,side_plate[2]/2])roundedBox(side_plate, edge);
 }
 
-module z_bottom_fancy()
+
+module z_rod_holder()
 {
-    // corner cutouts
-    translate([0.5,-2.5,-2]) rotate([0,0,-45-180]) translate([-15,0,-1]) cube([30,30,51]);
-    translate([0.5,40-0.5+5,-2]) rotate([0,0,-45+90]) translate([-15,0,-1]) cube([30,30,51]);
- 
-    translate([8,0,12+20+6]) rotate([0,-90,0]) translate([0,-5,0]) cube([30,50,30]);
-    translate([21,-2,12+8]) rotate([45,0,0]) rotate([0,-90,0]) translate([0,-5,0]) cube([30,50,30]);
-    translate([25,20,12+30]) rotate([-45,0,0]) rotate([0,-90,0]) translate([0,-5,0]) cube([30,50,30]);
-    translate([50-2.5,-5+2.5+67,-2]) rotate([0,0,-45-90]) translate([-15,0,-1]) cube([30,30,51]);
-   translate([50-2.5,-5+2.5,-2]) rotate([0,0,-45-90]) translate([-15,0,-1]) cube([30,30,51]);
- 
-   translate([-38,-10,-2]) rotate([0,45,0]) cube([30,60,30]);
-
-    // Stiffner cut out
-    translate([30,0,7.5]) rotate([0,-45,0]) translate([0,-5,0]) cube([30,60,30]);
-    
-    translate([-5,-10,-8.0]) rotate([45,0,0]) cube([60,10,10]);
-    translate([-5,52.0,-8.5]) rotate([45,0,0]) cube([60,10,10]);
-    translate([47,-10,-2]) rotate([0,45,0]) cube([30,60,30]);
-    
-    translate([49,37.5,-2]) rotate([0,45,45]) cube([30,30,30]);
-    translate([29,-16.7,-2]) rotate([0,45,-45]) cube([30,30,30]);
-}
-
-module z_bottom_holes()
-{
-    // Frame mounting screw holes
-    translate([-1,10,12]) rotate([0,90,0]) cylinder(h = 20, r=1.6, $fn=50);
-    translate([-1,10+20,12]) rotate([0,90,0]) cylinder(h = 20, r=1.6, $fn=50);
-    translate([-1,10+10,32]) rotate([0,90,0]) cylinder(h = 20, r=1.6, $fn=50);
-
-    // Frame mounting screw head holes
-    translate([4,10,12]) rotate([0,90,0]) cylinder(h = 20, r=3.1, $fn=30);
-    translate([4,10+20,12]) rotate([0,90,0]) cylinder(h = 20, r=3.1, $fn=30);
-    translate([4,10+10,32]) rotate([0,90,0]) cylinder(h = 20, r=3.1, $fn=30);
-    translate([4,10+10-3.1,10+20+2]) cube([10,6.2,10]);
-    translate([4,10,38]) rotate([0,45,0]) cube([10,20,10]);
-
-    // Z rod holder
-    difference() {
-    
-    translate([25+4.3,3,-0.1]) rotate([0,0,0]) cylinder(h = 5.6, r=4.05, $fn=50);
-    translate([23.3,-5,5.45-0.222]) cube([5,20,5]);
-    translate([23.3+7,-5,5.45-0.22]) cube([5,20,5]);    
-        
+    difference() 
+    {
+        translate([ 0,  trapesoid_rod_dist, -0.1])      cylinder(h = wall_sz-1.4, r=4.05);
+        translate([-6, -5-20, 5.45-0.22]) cube([5,20,5]);
+        translate([1,  -5-20, 5.45-0.22]) cube([5,20,5]);    
     }    
         
-   translate([25+4.3-1,2,4.5]) rotate([0,0,0]) cube([2,10,3]) ;
-    translate([25+4.3,3,-2.1]) rotate([0,0,0]) cylinder(h = 2.6, r1=6, r2=4, $fn=50);
-    translate([25+4.3-1,3,0.5]) cube([2,10,8]); // it's bit up because it helps with printing
+    translate([-1, trapesoid_rod_dist-1, 4.5])  cube([2,10,3]) ;
+    translate([0,  trapesoid_rod_dist, -2.1])   cylinder(h = 2.6, r1=6, r2=4);
+    translate([-1, trapesoid_rod_dist, 0.5])    cube([2,10,8]); // it's bit up because it helps with printing
+}
 
-    // motor mounting
-   translate([25+4.3,20,-1]){
+module _scr_print_helper(angle, z)
+{
+    rotate([0,0,angle]) translate([0,+body_r + head_r/2, z]) cube([2*head_r, head_r, 2], center = true);
+}
 
-    translate([15.5,15.5,-1]) cylinder(h = 20, r=1.65, $fn=50);
-    translate([15.5,-15.5,-1]) cylinder(h = 20, r=1.65, $fn=50);
-    translate([-15.5,15.5,-1]) cylinder(h = 20, r=1.65, $fn=50);
-    translate([-15.5,-15.5,-1]) cylinder(h = 20, r=1.65, $fn=50);
-        
-    
-       
-    translate([15.5,15.5,-0.5]) cylinder(h = 2, r1=4.5, r2=3.2,$fn=50);
-    translate([15.5,-15.5,-0.5]) cylinder(h = 2, r1=4.5, r2=3.2, $fn=50);
-    translate([-15.5,15.5,-0.5]) cylinder(h = 2, r1=4.5, r2=3.2, $fn=50);
-    translate([-15.5,-15.5,-0.5]) cylinder(h = 2, r1=4.5, r2=3.26, $fn=50);
+module _scr()
+{
+    cylinder(h = wall_sz + 1, r = body_r);
+    translate([0, 0, -1.5]) cylinder(h = 2, r1=4.5, r2 = head_r);
+
+    difference()
+    {
+        translate([0,0,-0.1]) cylinder(h = 2.9, r=head_r);
+
+        _scr_print_helper(  0,3.2);
+        _scr_print_helper(180,3.2);
+        _scr_print_helper(+90,3.5);
+        _scr_print_helper(-90,3.5);
+    } 
+}
+
+module motor_mounting()
+{
+    translate([ motor_scr_half_dist, motor_scr_half_dist,0]) _scr();
+    translate([ motor_scr_half_dist,-motor_scr_half_dist,0]) _scr();
+    translate([-motor_scr_half_dist, motor_scr_half_dist,0]) _scr();
+    translate([-motor_scr_half_dist,-motor_scr_half_dist,0]) _scr();
 
     // motor opening
-    translate([0,0,-1]) cylinder(h = 20, r=11.2, $fn=30);
-    translate([0,0,-0]) cylinder(h = 2, r2=11.2, r1=12, $fn=30);
-        
-    difference()
-    {
-        union()
-        {
-            translate([15.5,15.5,0.9]) cylinder(h = 2.9, r=3.2, $fn=50);
-            translate([15.5,-15.5,0.9]) cylinder(h = 2.9, r=3.2, $fn=50);
-            translate([-15.5,15.5,0.9]) cylinder(h = 2.9, r=3.2, $fn=50);
-            translate([-15.5,-15.5,0.9]) cylinder(h = 2.9, r=3.2, $fn=50);
-           
+    cylinder(h = wall_sz + 2, r=11.2);
+    translate([0,0,-1])cylinder(h = 2, r2=11.2, r1=12);
+}
+
+
+/*****************************************************************************/
+//parts 
+difference()
+{
+    z_bottom_base();
+    z_rod_holder();
+    motor_mounting();
+
+    translate([+motor_sz/2, +(motor_sz/2 + PROFILE_SZ/2), -1]) cylinder(d = PROFILE_SCREW_D + 0.2, h = wall_sz + 2);
+    translate([+motor_sz/2, -(motor_sz/2 + PROFILE_SZ/2), -1]) cylinder(d = PROFILE_SCREW_D + 0.2, h = wall_sz + 2);
+    translate([-motor_sz/2, +(motor_sz/2 + PROFILE_SZ/2), -1]) cylinder(d = PROFILE_SCREW_D + 0.2, h = wall_sz + 2);
+    translate([-motor_sz/2, -(motor_sz/2 + PROFILE_SZ/2), -1]) cylinder(d = PROFILE_SCREW_D + 0.2, h = wall_sz + 2);
             
-        }
-        translate([-25,3.85,3.2]) cube([55,10,2]);
-        translate([-25,-27.15,3.2]) cube([55,10,2]);
-        translate([-25,-13.85,3.2]) cube([55,10,2]);
-        translate([-25,17.15,3.2]) cube([55,10,2]);
-        
-        
-        
-       
-        translate([17.15,-20,3.5]) cube([10,60,2]);
-        translate([3.85,-20,3.5]) cube([10,60,2]);
-        translate([-27.15,-20,3.5]) cube([10,60,2]);
-        translate([-13.85,-20,3.5]) cube([10,60,2]);
-       
-    }        
-        
- }
-
 }
-
-
-
-
-module z_bottom_right()
-{
-    difference()
-    {
-        difference()
-        {
-            z_bottom_base();
-            z_bottom_fancy();
-            z_bottom_holes();
-        }
-        translate([7.3,25,14]) rotate([90,180,90]) linear_extrude(height = 0.6) 
-        { text("R3",font = "helvetica:style=Bold", size=5, center=true); }
-    }
-}
-
-module z_bottom_left()
-{
-    difference()
-    {
-        translate([0,-13,0]) mirror([0,1,0]) 
-        difference()
-        {
-            z_bottom_base();
-            z_bottom_fancy();
-            z_bottom_holes();
-        }
-        translate([7.3,-28.5,14]) rotate([90,180,90]) linear_extrude(height = 0.6) 
-        { text("R3",font = "helvetica:style=Bold", size=5, center=true); }
-    }
-}
-
-
-
- 
-z_bottom_right();
-z_bottom_left();
- 
 
 
 
